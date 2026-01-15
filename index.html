@@ -1018,6 +1018,10 @@
             <!-- 学习模式 -->
             <div class="nav-section">
                 <h3><i class="fas fa-graduation-cap"></i> 學習模式</h3>
+                <div class="nav-item" onclick="navigateTo('challenges')">
+                    <i class="fas fa-star"></i> 任務挑戰
+                    <span class="badge">新</span>
+                </div>
                 <div class="nav-item" onclick="navigateTo('free-mode')">
                     <i class="fas fa-lightbulb"></i> 自由模式
                 </div>
@@ -1195,13 +1199,13 @@
                     <option value="sql">SQL</option>
                 </select>
                 
-                <button class="btn" onclick="runCode()">
+                <button class="btn" onclick="runCode()" aria-label="執行選定語言的代碼">
                     <i class="fas fa-play"></i> 執行代碼
                 </button>
-                <button class="btn btn-success" onclick="saveCode()">
+                <button class="btn btn-success" onclick="saveCode()" aria-label="保存當前編輯的代碼">
                     <i class="fas fa-save"></i> 保存
                 </button>
-                <button class="btn" onclick="loadSnippet()">
+                <button class="btn" onclick="loadSnippet()" aria-label="加載預先定義的代碼片段">
                     <i class="fas fa-code"></i> 代碼片段
                 </button>
                 <button class="btn" onclick="debugCode()">
@@ -1448,7 +1452,7 @@ if __name__ == '__main__':
                     <option value="PATCH">PATCH</option>
                 </select>
                 <input type="text" class="form-control" id="http-url" placeholder="請求 URL" value="/api/users">
-                <button class="btn" onclick="sendHttpRequest()">
+                <button class="btn" onclick="sendHTTPRequest()" aria-label="發送配置的 HTTP 請求">
                     <i class="fas fa-paper-plane"></i> 發送請求
                 </button>
                 <button class="btn" onclick="addHeader()">
@@ -1533,7 +1537,7 @@ if __name__ == '__main__':
                             <span>請求結果</span>
                         </div>
                     </div>
-                    <div class="console-content" id="http-result">
+                    <div class="console-content" id="http-response-result">
                         <div class="log-entry info">
                             <div class="log-time">10:00:00</div>
                             <div class="log-message">HTTP 模擬器已就緒。配置請求參數並點擊"發送請求"。</div>
@@ -1583,7 +1587,7 @@ if __name__ == '__main__':
                     <option value="mysql">MySQL</option>
                     <option value="mongodb">MongoDB</option>
                 </select>
-                <button class="btn" onclick="executeQuery()">
+                <button class="btn" onclick="executeQuery()" aria-label="執行選定的數據庫查詢">
                     <i class="fas fa-play"></i> 執行查詢
                 </button>
                 <button class="btn btn-success" onclick="createTable()">
@@ -2165,19 +2169,19 @@ console.log('用戶:', user)</textarea>
             </div>
 
             <div class="stats-panel">
-                <div class="stat-card">
+                <div class="stat-card" role="status" aria-live="polite" aria-label="API調用總數統計">
                     <div class="stat-value" id="total-api-calls">0</div>
                     <div class="stat-label">API 調用總數</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="success-calls">0</div>
+                <div class="stat-card" role="status" aria-live="polite" aria-label="成功請求數統計">
+                    <div class="stat-value" id="success-count">0</div>
                     <div class="stat-label">成功請求</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="error-calls">0</div>
+                <div class="stat-card" role="status" aria-live="polite" aria-label="失敗請求數統計">
+                    <div class="stat-value" id="error-count">0</div>
                     <div class="stat-label">失敗請求</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" role="status" aria-live="polite" aria-label="平均延遲統計">
                     <div class="stat-value" id="avg-latency">0ms</div>
                     <div class="stat-label">平均延遲</div>
                 </div>
@@ -2316,6 +2320,86 @@ console.log('用戶:', user)</textarea>
                 </div>
             </div>
         </div>
+
+        <!-- 挑戰系統頁面 -->
+        <div class="page" id="challenges" data-page="challenges">
+            <div class="page-header">
+                <h1 class="page-title">任務挑戰</h1>
+                <p class="page-subtitle">逐步完成後端開發挑戰，學習實際應用</p>
+            </div>
+
+            <div class="toolbar">
+                <select class="form-control" style="width: 200px;" onchange="const id = parseInt(this.value); ChallengeSystem.loadChallenge(id); loadChallengeUI();">
+                    <option value="1">#1 建立使用者登入 API (簡單)</option>
+                    <option value="2">#2 建立資源 CRUD API (中等)</option>
+                    <option value="3">#3 實現認證中間件 (困難)</option>
+                </select>
+                
+                <button class="btn" onclick="showReferenceSolution()" aria-label="查看參考解決方案">
+                    <i class="fas fa-lightbulb"></i> 參考方案
+                </button>
+                
+                <button class="btn btn-success" onclick="compareWithReference()" aria-label="比對您的解決方案">
+                    <i class="fas fa-code"></i> 比對解決方案
+                </button>
+                
+                <button class="btn" onclick="visualizeRequestLifecycle()" aria-label="可視化請求生命週期">
+                    <i class="fas fa-project-diagram"></i> 請求流程
+                </button>
+            </div>
+
+            <div class="two-column-layout">
+                <div class="column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 id="challengeTitle">挑戰標題</h3>
+                            <span id="challengeDifficulty" style="color: #94a3b8;">難度: easy</span>
+                        </div>
+                        <div class="card-body">
+                            <p id="challengeDescription">挑戰描述將在此顯示</p>
+                            
+                            <div style="margin-top: 15px;">
+                                <strong>學習目標:</strong>
+                                <ul id="challengeObjectives" style="margin: 10px 0; padding-left: 20px;">
+                                    <!-- 目標將在此動態生成 -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="lifecycleVisualization" style="margin-top: 20px;">
+                        <!-- 請求生命週期可視化將在此顯示 -->
+                    </div>
+                </div>
+                
+                <div class="column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>挑戰代碼</h3>
+                        </div>
+                        <div class="card-body">
+                            <textarea id="challenge-code-area" style="width: 100%; height: 400px; background: #0f172a; color: #e2e8f0; font-family: monospace; padding: 10px; border: 1px solid #334155; border-radius: 4px;">// 在此實現挑戰
+</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 15px;">
+                        <div class="card-header">
+                            <h3>進度</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: 10px;">
+                                <strong>完成度:</strong>
+                                <span id="progressPercentage" style="color: #38bdf8;">0/3</span>
+                            </div>
+                            <div style="background: #0f172a; border-radius: 4px; height: 24px; overflow: hidden;">
+                                <div id="progressBar" style="background: linear-gradient(90deg, #0ea5e9, #38bdf8); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- OAuth授权对话框 -->
@@ -2396,6 +2480,734 @@ console.log('用戶:', user)</textarea>
         let gitHistory = [];
         let currentBranch = 'main';
 
+        // ============================================
+        // 狀態管理系統
+        // ============================================
+        const StateManager = {
+            state: {
+                codeExecutions: [],
+                apiRequests: [],
+                databaseQueries: [],
+                userAuthentications: [],
+                routeTests: [],
+                unitTests: [],
+                performanceMetrics: { cpu: 0, memory: 0, storage: 0 }
+            },
+            
+            addCodeExecution: function(code, output, status) {
+                this.state.codeExecutions.push({
+                    id: Date.now(),
+                    code: code,
+                    output: output,
+                    status: status,
+                    timestamp: new Date().toLocaleTimeString('zh-TW')
+                });
+                this.updateStats();
+                return this.state.codeExecutions[this.state.codeExecutions.length - 1];
+            },
+            
+            addAPIRequest: function(method, url, params, response, status) {
+                const request = {
+                    id: Date.now(),
+                    method: method,
+                    url: url,
+                    params: params,
+                    response: response,
+                    status: status,
+                    timestamp: new Date().toLocaleTimeString('zh-TW'),
+                    latency: Math.random() * 500 + 50
+                };
+                this.state.apiRequests.push(request);
+                requestStats.total++;
+                if (status === 'success') requestStats.success++;
+                else requestStats.error++;
+                requestStats.latency.push(request.latency);
+                this.updateStats();
+                return request;
+            },
+            
+            addDatabaseQuery: function(query, result, status) {
+                this.state.databaseQueries.push({
+                    id: Date.now(),
+                    query: query,
+                    result: result,
+                    status: status,
+                    timestamp: new Date().toLocaleTimeString('zh-TW'),
+                    duration: Math.random() * 200 + 10
+                });
+                this.updateStats();
+                return this.state.databaseQueries[this.state.databaseQueries.length - 1];
+            },
+            
+            addUnitTest: function(testName, passed, assertions) {
+                this.state.unitTests.push({
+                    id: Date.now(),
+                    testName: testName,
+                    passed: passed,
+                    assertions: assertions,
+                    timestamp: new Date().toLocaleTimeString('zh-TW')
+                });
+                this.updateStats();
+                return this.state.unitTests[this.state.unitTests.length - 1];
+            },
+            
+            updateStats: function() {
+                const totalTests = this.state.unitTests.length;
+                const passedTests = this.state.unitTests.filter(t => t.passed).length;
+                document.getElementById('api-count').textContent = this.state.apiRequests.length;
+                document.getElementById('total-requests').textContent = requestStats.total;
+                document.getElementById('success-count').textContent = requestStats.success;
+                document.getElementById('error-count').textContent = requestStats.error;
+                document.getElementById('test-count').textContent = `${passedTests}/${totalTests}`;
+                document.getElementById('code-runs').textContent = this.state.codeExecutions.length;
+            }
+        };
+
+        // ============================================
+        // 虛擬 REST API 伺服器引擎
+        // ============================================
+        const VirtualAPIServer = {
+            routes: [],
+            middlewares: [],
+            
+            defineRoute: function(method, path, handler) {
+                this.routes.push({ method: method.toUpperCase(), path, handler });
+                logSystemEvent(`路由已定義: ${method.toUpperCase()} ${path}`, 'info');
+            },
+            
+            addMiddleware: function(name, fn) {
+                this.middlewares.push({ name, fn });
+                logSystemEvent(`中間件已添加: ${name}`, 'info');
+            },
+            
+            handleRequest: function(method, path, body = null, headers = {}) {
+                const route = this.routes.find(r => 
+                    r.method === method.toUpperCase() && 
+                    this.matchPath(r.path, path)
+                );
+                
+                if (!route) {
+                    return { 
+                        status: 404, 
+                        body: { error: `路由 ${method} ${path} 未找到` } 
+                    };
+                }
+                
+                const request = { 
+                    method, 
+                    path, 
+                    body: body ? JSON.parse(body) : null, 
+                    headers 
+                };
+                const response = { status: 200, body: null };
+                
+                try {
+                    // 執行中間件
+                    for (const mw of this.middlewares) {
+                        mw.fn(request, response);
+                        if (response.status >= 400) return response;
+                    }
+                    
+                    // 執行路由處理器
+                    const result = route.handler(request, response);
+                    response.body = result || response.body;
+                    
+                    return response;
+                } catch (error) {
+                    return { 
+                        status: 500, 
+                        body: { error: '伺服器內部錯誤', message: error.message } 
+                    };
+                }
+            },
+            
+            matchPath: function(routePath, requestPath) {
+                const routeParts = routePath.split('/').filter(p => p);
+                const requestParts = requestPath.split('/').filter(p => p);
+                
+                if (routeParts.length !== requestParts.length) return false;
+                
+                return routeParts.every((part, i) => 
+                    part.startsWith(':') || part === requestParts[i]
+                );
+            },
+            
+            clear: function() {
+                this.routes = [];
+                this.middlewares = [];
+            }
+        };
+
+        // ============================================
+        // 虛擬資料庫記憶體引擎
+        // ============================================
+        const VirtualDatabase = {
+            tables: {},
+            
+            createTable: function(name, schema) {
+                this.tables[name] = { schema, data: [] };
+                logSystemEvent(`表已創建: ${name}`, 'info');
+            },
+            
+            insert: function(tableName, record) {
+                if (!this.tables[tableName]) {
+                    throw new Error(`表 ${tableName} 不存在`);
+                }
+                record.id = record.id || Date.now();
+                this.tables[tableName].data.push(record);
+                return record;
+            },
+            
+            select: function(tableName, whereClause = null) {
+                if (!this.tables[tableName]) {
+                    throw new Error(`表 ${tableName} 不存在`);
+                }
+                
+                let results = this.tables[tableName].data;
+                if (whereClause) {
+                    results = results.filter(whereClause);
+                }
+                return results;
+            },
+            
+            update: function(tableName, whereClause, updates) {
+                if (!this.tables[tableName]) {
+                    throw new Error(`表 ${tableName} 不存在`);
+                }
+                
+                let count = 0;
+                this.tables[tableName].data.forEach(record => {
+                    if (whereClause(record)) {
+                        Object.assign(record, updates);
+                        count++;
+                    }
+                });
+                return count;
+            },
+            
+            delete: function(tableName, whereClause) {
+                if (!this.tables[tableName]) {
+                    throw new Error(`表 ${tableName} 不存在`);
+                }
+                
+                const before = this.tables[tableName].data.length;
+                this.tables[tableName].data = 
+                    this.tables[tableName].data.filter(r => !whereClause(r));
+                return before - this.tables[tableName].data.length;
+            },
+            
+            getTableData: function(tableName) {
+                return this.tables[tableName]?.data || [];
+            },
+            
+            clear: function() {
+                this.tables = {};
+            }
+        };
+
+        // ============================================
+        // 任務挑戰系統
+        // ============================================
+        const ChallengeSystem = {
+            challenges: [
+                {
+                    id: 1,
+                    title: '建立使用者登入 API',
+                    difficulty: 'easy',
+                    description: '實現一個 POST /login 端點，接受用戶名和密碼，返回驗證結果',
+                    objectives: [
+                        '定義 /login 路由',
+                        '實現密碼驗證邏輯',
+                        '返回成功/失敗響應'
+                    ],
+                    initialCode: `// 定義使用者表
+db.createTable('users', ['id', 'username', 'password']);
+
+// 定義登入路由
+api.defineRoute('POST', '/login', (req, res) => {
+    // 在此實現登入邏輯
+});`,
+                    referenceSolution: `db.createTable('users', ['id', 'username', 'password']);
+db.insert('users', { username: 'admin', password: 'admin123' });
+
+api.defineRoute('POST', '/login', (req, res) => {
+    const user = db.select('users', r => r.username === req.body.username)[0];
+    if (user && user.password === req.body.password) {
+        return { success: true, token: 'JWT_TOKEN' };
+    }
+    return { success: false, error: '登入失敗' };
+});`
+                },
+                {
+                    id: 2,
+                    title: '建立資源 CRUD API',
+                    difficulty: 'medium',
+                    description: '實現完整的產品管理 CRUD 端點：GET/POST/PUT/DELETE',
+                    objectives: [
+                        '建立 /products 表',
+                        '實現 GET 查詢所有產品',
+                        '實現 POST 新增產品',
+                        '實現 PUT 更新產品',
+                        '實現 DELETE 刪除產品'
+                    ],
+                    initialCode: `// 建立產品表與路由
+// TODO: 実装 CRUD endpoints`,
+                    referenceSolution: `db.createTable('products', ['id', 'name', 'price', 'stock']);
+
+api.defineRoute('GET', '/products', (req, res) => {
+    return db.select('products');
+});
+
+api.defineRoute('POST', '/products', (req, res) => {
+    return db.insert('products', req.body);
+});
+
+api.defineRoute('PUT', '/products/:id', (req, res) => {
+    const id = parseInt(req.path.split('/')[2]);
+    db.update('products', r => r.id === id, req.body);
+    return { success: true };
+});
+
+api.defineRoute('DELETE', '/products/:id', (req, res) => {
+    const id = parseInt(req.path.split('/')[2]);
+    const count = db.delete('products', r => r.id === id);
+    return { deleted: count };
+});`
+                },
+                {
+                    id: 3,
+                    title: '實現認證中間件',
+                    difficulty: 'hard',
+                    description: '建立一個中間件檢查 Authorization 標頭中的有效 token',
+                    objectives: [
+                        '建立 auth 中間件',
+                        '檢查 Authorization 標頭',
+                        '驗證 token 有效性',
+                        '在受保護的路由中應用'
+                    ],
+                    initialCode: `// 實現認證中間件
+// api.addMiddleware('auth', (req, res) => { ... })`,
+                    referenceSolution: `api.addMiddleware('auth', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        res.status = 401;
+        return;
+    }
+    const token = authHeader.replace('Bearer ', '');
+    // 驗證 token（簡化版）
+    if (token !== 'valid_token_123') {
+        res.status = 403;
+    }
+});
+
+api.defineRoute('GET', '/protected', (req, res) => {
+    return { message: '這是受保護的資源' };
+});`
+                }
+            ],
+            
+            currentChallenge: null,
+            userProgress: {},
+            
+            loadChallenge: function(challengeId) {
+                this.currentChallenge = this.challenges.find(c => c.id === challengeId);
+                if (!this.userProgress[challengeId]) {
+                    this.userProgress[challengeId] = { started: false, completed: false };
+                }
+                return this.currentChallenge;
+            },
+            
+            markCompleted: function(challengeId) {
+                this.userProgress[challengeId].completed = true;
+                logSystemEvent(`挑戰已完成: #${challengeId}`, 'success');
+            },
+            
+            getProgress: function() {
+                const completed = Object.values(this.userProgress).filter(p => p.completed).length;
+                return `${completed}/${this.challenges.length}`;
+            }
+        };
+
+        // ============================================
+        // 請求生命週期可視化
+        // ============================================
+        const RequestLifecycleVisualizer = {
+            stages: [
+                { name: '路由匹配', duration: 10, description: '尋找相符的路由定義' },
+                { name: '中間件執行', duration: 30, description: '執行所有中間件' },
+                { name: '控制器處理', duration: 50, description: '執行路由處理器' },
+                { name: '資料庫操作', duration: 40, description: '執行 CRUD 操作' },
+                { name: '回應序列化', duration: 20, description: '準備回應體' }
+            ],
+            
+            visualizeRequest: function(method, path) {
+                const timeline = document.createElement('div');
+                timeline.style.cssText = `
+                    background: linear-gradient(90deg, #1e40af, #0f172a);
+                    padding: 20px;
+                    border-radius: 8px;
+                    color: #f8fafc;
+                    font-family: monospace;
+                `;
+                
+                let html = `<div style="margin-bottom: 15px;"><strong>請求: ${method} ${path}</strong></div>`;
+                let totalTime = 0;
+                
+                this.stages.forEach((stage, index) => {
+                    totalTime += stage.duration;
+                    const left = this.stages.slice(0, index).reduce((sum, s) => sum + s.duration, 0);
+                    
+                    html += `
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 0.9em; margin-bottom: 4px;">
+                                ${index + 1}. ${stage.name} (${stage.duration}ms)
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 4px; height: 24px; position: relative; overflow: hidden;">
+                                <div style="
+                                    position: absolute;
+                                    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+                                    height: 100%;
+                                    width: ${(stage.duration / 150) * 100}%;
+                                    animation: slideIn 0.5s ease-out;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    color: #0f172a;
+                                    font-size: 0.8em;
+                                    font-weight: bold;
+                                " title="${stage.description}">${stage.duration}ms</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); text-align: right;"><strong>總耗時: ${totalTime}ms</strong></div>`;
+                
+                timeline.innerHTML = html;
+                return timeline;
+            }
+        };
+
+        // ============================================
+        // 解決方案比對系統
+        // ============================================
+        const SolutionComparison = {
+            compareCode: function(userCode, referenceCode) {
+                const userLines = userCode.split('\\n');
+                const refLines = referenceCode.split('\\n');
+                
+                const comparison = {
+                    identical: userCode.trim() === referenceCode.trim(),
+                    userLineCount: userLines.length,
+                    referenceLineCount: refLines.length,
+                    similarities: this.calculateSimilarity(userCode, referenceCode),
+                    suggestions: []
+                };
+                
+                if (!comparison.identical) {
+                    if (comparison.userLineCount < comparison.referenceLineCount) {
+                        comparison.suggestions.push('您的程式碼可能缺少某些功能，請參考參考方案中的實現');
+                    }
+                    
+                    if (!userCode.includes('middleware') && referenceCode.includes('middleware')) {
+                        comparison.suggestions.push('建議添加中間件邏輯');
+                    }
+                    
+                    if (!userCode.includes('error') && referenceCode.includes('error')) {
+                        comparison.suggestions.push('記得添加錯誤處理機制');
+                    }
+                }
+                
+                return comparison;
+            },
+            
+            calculateSimilarity: function(code1, code2) {
+                // 簡單的相似度計算（字符比對）
+                let matches = 0;
+                const minLen = Math.min(code1.length, code2.length);
+                
+                for (let i = 0; i < minLen; i++) {
+                    if (code1[i] === code2[i]) matches++;
+                }
+                
+                return Math.round((matches / Math.max(code1.length, code2.length)) * 100);
+            },
+            
+            generateReport: function(challengeId, userCode) {
+                const challenge = ChallengeSystem.challenges.find(c => c.id === challengeId);
+                if (!challenge) return null;
+                
+                const comparison = this.compareCode(userCode, challenge.referenceSolution);
+                
+                return {
+                    challengeTitle: challenge.title,
+                    completed: comparison.identical,
+                    similarity: comparison.similarities,
+                    feedback: {
+                        positive: comparison.similarities >= 80 ? '很好的嘗試！您的方案接近參考解決方案。' : '繼續努力',
+                        suggestions: comparison.suggestions,
+                        keyPoints: [
+                            '檢查路由定義是否正確',
+                            '驗證中間件邏輯',
+                            '確保錯誤處理完整',
+                            '測試所有邊界情況'
+                        ]
+                    }
+                };
+            }
+        };
+
+        // ============================================
+        // 初始化函数
+        // ============================================
+        function sendHTTPRequest() {
+            const method = document.getElementById('http-method').value;
+            const url = document.getElementById('http-url').value;
+            const requestBody = document.getElementById('http-body')?.value || '{}';
+            
+            if (!url.trim()) {
+                showFlash('請輸入請求 URL', 'warning');
+                return;
+            }
+            
+            logSystemEvent(`發送 ${method} 請求: ${url}`, 'info');
+            showFlash('正在發送請求...', 'info');
+            
+            try {
+                setTimeout(() => {
+                    let response;
+                    const status = Math.random() > 0.1 ? 'success' : 'error';
+                    
+                    if (status === 'success') {
+                        response = {
+                            status: 200,
+                            statusText: 'OK',
+                            data: {
+                                message: `${method} ${url} 執行成功`,
+                                timestamp: new Date().toISOString(),
+                                requestID: 'REQ-' + Date.now()
+                            }
+                        };
+                    } else {
+                        response = {
+                            status: 500,
+                            statusText: 'Internal Server Error',
+                            error: '服務器內部錯誤'
+                        };
+                    }
+                    
+                    const result = StateManager.addAPIRequest(method, url, requestBody, JSON.stringify(response, null, 2), status);
+                    displayHTTPResponse(response, result);
+                    showFlash(`請求完成: ${response.status} ${response.statusText}`, status === 'success' ? 'success' : 'error');
+                    logSystemEvent(`${method} ${url} 完成，耗時: ${result.latency.toFixed(0)}ms`, status);
+                }, 500 + Math.random() * 1000);
+                
+            } catch (error) {
+                showFlash('請求發送失敗: ' + error.message, 'error');
+                logSystemEvent(`API 請求錯誤: ${error.message}`, 'error');
+            }
+        }
+        
+        function displayHTTPResponse(response, requestRecord) {
+            const resultsDiv = document.getElementById('http-response-result');
+            if (!resultsDiv) return;
+            
+            const statusClass = response.status >= 200 && response.status < 300 ? 'success' : 'error';
+            resultsDiv.innerHTML = `<div class="log-entry ${statusClass}"><div class="log-time">${requestRecord.timestamp}</div><div class="log-message"><div><strong>狀態碼:</strong> ${response.status} ${response.statusText}</div><div><strong>延遲:</strong> ${requestRecord.latency.toFixed(0)}ms</div><div><strong>回應內容:</strong></div><pre>${typeof response.data === 'object' ? JSON.stringify(response.data, null, 2) : response.error}</pre></div></div>`;
+        }
+        
+        function executeQuery() {
+            const dbType = document.getElementById('db-type').value;
+            const query = document.getElementById('db-query').value;
+            
+            if (!query.trim()) {
+                showFlash('請輸入查詢語句', 'warning');
+                return;
+            }
+            
+            logSystemEvent(`執行 ${dbType.toUpperCase()} 查詢`, 'info');
+            showFlash('正在執行查詢...', 'info');
+            
+            setTimeout(() => {
+                let result;
+                if (dbType === 'mysql') {
+                    result = executeMySQLQuery(query);
+                } else if (dbType === 'mongodb') {
+                    result = executeMongoDBQuery(query);
+                }
+                
+                const dbRecord = StateManager.addDatabaseQuery(query, result.output, result.success ? 'success' : 'error');
+                displayQueryResult(result, dbRecord);
+                showFlash(`查詢完成，耗時: ${result.duration}ms`, result.success ? 'success' : 'error');
+                logSystemEvent(`數據庫查詢完成 (${dbRecord.duration.toFixed(0)}ms)`, result.success ? 'success' : 'error');
+            }, 300 + Math.random() * 500);
+        }
+        
+        function executeMySQLQuery(query) {
+            const data = databaseData.mysql;
+            let output = '';
+            
+            if (query.toLowerCase().includes('select * from users')) {
+                output = formatTableOutput(data.users, ['id', 'name', 'email', 'age', 'active']);
+            } else if (query.toLowerCase().includes('select')) {
+                output = '查詢返回 ' + data.users.length + ' 行數據';
+            } else if (query.toLowerCase().includes('insert')) {
+                output = '插入成功，影響 1 行';
+            } else if (query.toLowerCase().includes('update')) {
+                output = '更新成功，影響 ' + Math.floor(Math.random() * 3 + 1) + ' 行';
+            } else {
+                output = '查詢執行成功';
+            }
+            
+            return { success: true, output: output, duration: Math.random() * 200 + 50 };
+        }
+        
+        function executeMongoDBQuery(query) {
+            const data = databaseData.mongodb;
+            let output = '';
+            
+            if (query.includes('find')) {
+                output = JSON.stringify(data.users, null, 2);
+            } else if (query.includes('insertOne')) {
+                output = '{ acknowledged: true, insertedId: ObjectId(...) }';
+            } else if (query.includes('updateOne')) {
+                output = '{ acknowledged: true, modifiedCount: 1 }';
+            } else {
+                output = JSON.stringify(data.users, null, 2);
+            }
+            
+            return { success: true, output: output, duration: Math.random() * 150 + 50 };
+        }
+        
+        function formatTableOutput(data, columns) {
+            const header = columns.map(c => c.padEnd(15)).join(' | ');
+            const separator = '-'.repeat(header.length);
+            const rows = data.map(row => columns.map(col => String(row[col] || '').padEnd(15)).join(' | '));
+            return header + '\\n' + separator + '\\n' + rows.join('\\n');
+        }
+        
+        function displayQueryResult(result, dbRecord) {
+            const resultsDiv = document.getElementById('db-result');
+            if (!resultsDiv) return;
+            
+            resultsDiv.innerHTML = `<div class="log-entry ${result.success ? 'success' : 'error'}"><div class="log-time">${dbRecord.timestamp}</div><div class="log-message"><div><strong>執行耗時:</strong> ${dbRecord.duration.toFixed(0)}ms</div><div><strong>結果:</strong></div><pre>${result.output}</pre></div></div>`;
+        }
+
+        // ============================================
+        // 任務挑戰系統 UI 函數
+        // ============================================
+        function loadChallengeUI() {
+            const challenge = ChallengeSystem.currentChallenge;
+            if (!challenge) return;
+            
+            const titleEl = document.getElementById('challengeTitle');
+            const diffEl = document.getElementById('challengeDifficulty');
+            const descEl = document.getElementById('challengeDescription');
+            const objEl = document.getElementById('challengeObjectives');
+            
+            if (titleEl) titleEl.textContent = challenge.title;
+            if (diffEl) diffEl.textContent = '難度: ' + challenge.difficulty;
+            if (descEl) descEl.textContent = challenge.description;
+            
+            if (objEl) {
+                objEl.innerHTML = challenge.objectives.map(obj => 
+                    '<li style="margin: 5px 0; color: #94a3b8;">' + obj + '</li>'
+                ).join('');
+            }
+            
+            if (editors.challenge) {
+                editors.challenge.setValue(challenge.initialCode);
+            }
+            
+            logSystemEvent('已加載挑戰: ' + challenge.title, 'info');
+        }
+
+        function showReferenceSolution() {
+            const challenge = ChallengeSystem.currentChallenge;
+            if (!challenge) {
+                showFlash('請先選擇一個挑戰', 'warning');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            
+            modal.innerHTML = '<div style="background: #1e293b; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; color: #e2e8f0;"><h3 style="margin-top: 0; color: #38bdf8;">參考解決方案</h3><pre style="background: #0f172a; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 0.9em;">' + challenge.referenceSolution + '</pre><button onclick="this.parentElement.parentElement.remove()" style="background: #0ea5e9; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 15px;">關閉</button></div>';
+            
+            document.body.appendChild(modal);
+        }
+
+        function compareWithReference() {
+            const challenge = ChallengeSystem.currentChallenge;
+            if (!challenge) {
+                showFlash('請先選擇一個挑戰', 'warning');
+                return;
+            }
+            
+            const userCode = (editors.challenge && editors.challenge.getValue) ? editors.challenge.getValue() : '';
+            const report = SolutionComparison.generateReport(challenge.id, userCode);
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            
+            const similarityColor = report.similarity >= 80 ? '#10b981' : (report.similarity >= 50 ? '#f59e0b' : '#ef4444');
+            
+            let suggestionsHTML = '<ul style="margin: 10px 0; padding-left: 20px;">';
+            if (report.feedback.suggestions.length > 0) {
+                suggestionsHTML += report.feedback.suggestions.map(s => '<li>' + s + '</li>').join('');
+            } else {
+                suggestionsHTML += '<li>您的實現已經很接近參考方案！</li>';
+            }
+            suggestionsHTML += '</ul>';
+            
+            const keyPointsHTML = '<ul style="margin: 10px 0; padding-left: 20px;">' + 
+                report.feedback.keyPoints.map(p => '<li>' + p + '</li>').join('') + 
+                '</ul>';
+            
+            modal.innerHTML = '<div style="background: #1e293b; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; color: #e2e8f0;"><h3 style="margin-top: 0; color: #38bdf8;">' + report.challengeTitle + ' - 評估報告</h3><div style="background: #0f172a; padding: 15px; border-radius: 4px; margin-bottom: 15px;"><div style="margin-bottom: 10px;"><strong>相似度: <span style="color: ' + similarityColor + ';">' + report.similarity + '%</span></strong></div><div style="margin-bottom: 10px;"><strong>狀態: ' + (report.completed ? '<span style="color: #10b981;">✓ 完成</span>' : '<span style="color: #f59e0b;">○ 進行中</span>') + '</strong></div></div><div style="background: #0f172a; padding: 15px; border-radius: 4px; margin-bottom: 15px;"><strong style="color: #38bdf8;">反饋:</strong><p style="margin: 10px 0 0 0;">' + report.feedback.positive + '</p></div><div style="background: #0f172a; padding: 15px; border-radius: 4px; margin-bottom: 15px;"><strong style="color: #38bdf8;">建議:</strong>' + suggestionsHTML + '</div><div style="background: #0f172a; padding: 15px; border-radius: 4px; margin-bottom: 15px;"><strong style="color: #38bdf8;">關鍵要點:</strong>' + keyPointsHTML + '</div><button onclick="this.parentElement.parentElement.remove()" style="background: #0ea5e9; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">關閉</button></div>';
+            
+            document.body.appendChild(modal);
+            logSystemEvent('已執行程式碼比對: 相似度 ' + report.similarity + '%', 'info');
+        }
+
+        // ============================================
+        // API 伺服器管理函數
+        // ============================================
+        function setupAPIServer() {
+            // 建立預設路由
+            VirtualAPIServer.defineRoute('GET', '/api/users', function(req, res) {
+                return VirtualDatabase.select('users');
+            });
+            
+            VirtualAPIServer.defineRoute('POST', '/api/users', function(req, res) {
+                return VirtualDatabase.insert('users', req.body);
+            });
+            
+            // 建立預設資料表
+            VirtualDatabase.createTable('users', ['id', 'name', 'email', 'role']);
+            VirtualDatabase.insert('users', { id: 1, name: '管理員', email: 'admin@example.com', role: 'admin' });
+            VirtualDatabase.insert('users', { id: 2, name: '用戶', email: 'user@example.com', role: 'user' });
+            
+            showFlash('API 伺服器已啟動', 'success');
+            logSystemEvent('虛擬 API 伺服器已初始化', 'info');
+        }
+
+        function visualizeRequestLifecycle() {
+            const method = (document.getElementById('httpMethod') && document.getElementById('httpMethod').value) || 'GET';
+            const url = (document.getElementById('httpUrl') && document.getElementById('httpUrl').value) || '/api/users';
+            
+            const visualization = RequestLifecycleVisualizer.visualizeRequest(method, url);
+            
+            const container = document.getElementById('lifecycleVisualization') || document.getElementById('lifecycleContainer');
+            
+            if (container) {
+                container.innerHTML = '';
+                container.appendChild(visualization);
+            }
+            
+            logSystemEvent('已可視化請求生命週期: ' + method + ' ' + url, 'info');
+        }
+
         // 初始化函数
         async function init() {
             // 初始化 CodeMirror 编辑器
@@ -2408,6 +3220,17 @@ console.log('用戶:', user)</textarea>
                 lineWrapping: true,
                 lint: true,
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers", "breakpoints"],
+                autoRefresh: true
+            });
+
+            // 初始化挑戰編輯器
+            editors.challenge = CodeMirror.fromTextArea(document.getElementById('challenge-code-area'), {
+                mode: 'python',
+                theme: 'monokai',
+                lineNumbers: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                lineWrapping: true,
                 autoRefresh: true
             });
 
@@ -2430,6 +3253,12 @@ console.log('用戶:', user)</textarea>
             
             // 初始化路由
             initRoutes();
+            
+            // 初始化 API 伺服器
+            setupAPIServer();
+            
+            // 初始化挑戰系統
+            ChallengeSystem.loadChallenge(1);
             
             // 初始化用户数据
             initUsers();
@@ -2728,47 +3557,103 @@ console.log('用戶:', user)</textarea>
             const code = editors.code.getValue();
             const language = document.getElementById('language-select').value;
             
+            if (!code.trim()) {
+                showFlash('請輸入代碼', 'warning');
+                return;
+            }
+            
             logSystemEvent('開始執行代碼', 'info');
             showFlash('代碼執行中...', 'info');
             
             try {
                 let result;
                 if (language === 'python' && pyodide) {
-                    // 使用Pyodide执行Python代码
                     result = await executePythonCode(code);
                 } else if (language === 'javascript') {
-                    // 使用eval执行JavaScript代码（安全限制）
                     result = executeJavaScriptCode(code);
+                } else if (language === 'java') {
+                    result = simulateJavaExecution(code);
+                } else if (language === 'nodejs') {
+                    result = simulateNodeJSExecution(code);
                 } else {
-                    // 模拟执行其他语言
                     result = simulateCodeExecution(code, language);
                 }
                 
+                // 使用 StateManager 記錄執行
+                StateManager.addCodeExecution(code, result.output, result.success ? 'success' : 'error');
+                
                 if (result.success) {
                     addConsoleLog('代碼執行成功', 'success', result.output);
-                    showFlash('代碼執行成功', 'success');
-                    logSystemEvent('代碼執行完成', 'success');
-                    
-                    requestStats.success++;
-                    requestStats.total++;
+                    showFlash('代碼執行成功！', 'success');
+                    logSystemEvent('代碼執行完成，耗時：' + (result.executionTime || '未知'), 'success');
                 } else {
                     addConsoleLog('代碼執行失敗', 'error', result.error);
-                    showFlash('代碼執行失敗', 'error');
+                    showFlash('代碼執行失敗：' + result.error, 'error');
                     logSystemEvent(`代碼執行錯誤: ${result.error}`, 'error');
-                    
-                    requestStats.error++;
-                    requestStats.total++;
                 }
                 
                 updateStats();
             } catch (error) {
-                addConsoleLog('代碼執行錯誤', 'error', error.message);
-                showFlash('代碼執行錯誤', 'error');
+                addConsoleLog('代碼執行異常', 'error', error.message);
+                showFlash('代碼執行異常', 'error');
                 logSystemEvent(`代碼執行異常: ${error.message}`, 'error');
                 
                 requestStats.error++;
                 requestStats.total++;
                 updateStats();
+            }
+        }
+        
+        function simulateJavaExecution(code) {
+            // 模擬 Java 執行
+            try {
+                // 提取 main 方法或類名
+                const className = code.match(/public class (\w+)/)?.[1] || 'Main';
+                const hasMain = code.includes('public static void main');
+                
+                if (!hasMain) {
+                    return { 
+                        success: false, 
+                        error: `Java 類 "${className}" 缺少 main 方法` 
+                    };
+                }
+                
+                // 模擬輸出
+                const output = `編譯 ${className}.java 成功\\n[${new Date().toLocaleTimeString('zh-TW')}] 執行 ${className}.main()\\n\\n動作執行完成（模擬模式）`;
+                
+                return {
+                    success: true,
+                    output: output,
+                    executionTime: Math.random() * 200 + 100 + 'ms'
+                };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+        
+        function simulateNodeJSExecution(code) {
+            // 模擬 Node.js 執行
+            try {
+                const output = [];
+                // 簡單的評估
+                if (code.includes('console.log')) {
+                    const logMatches = code.match(/console\.log\((.*?)\)/g);
+                    if (logMatches) {
+                        logMatches.forEach(match => {
+                            output.push(match.replace(/console\.log\((.*?)\)/, '$1').replace(/['"]/g, ''));
+                        });
+                    }
+                } else {
+                    output.push('Node.js 應用執行完成（模擬模式）');
+                }
+                
+                return {
+                    success: true,
+                    output: output.join('\\n') || '執行完成',
+                    executionTime: Math.random() * 150 + 50 + 'ms'
+                };
+            } catch (error) {
+                return { success: false, error: error.message };
             }
         }
 
